@@ -1,0 +1,843 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2016-12-08 Thu 20:19 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Theorem Proving in Lean</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="[[http://www.andrew.cmu.edu/user/avigad][Jeremy Avigad]]Jeremy Avigad" />
+<link rel="stylesheet" href="css/tutorial.css"/>
+<link rel="stylesheet" href="css/code.css"/>
+<script type="text/javascript" charset="utf-8">if(!window.PolymerGestures) { var head = document.getElementsByTagName('head')[0]; var js = document.createElement("script"); js.type = "text/javascript"; js.src = "//cdn.jsdelivr.net/webcomponentsjs/0.7.20/webcomponents.min.js"; head.appendChild(js); } </script>
+<link rel='import' href='juicy-ace-editor.html'/>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Theorem Proving in Lean</h1>
+
+<div id="outline-container-org7be2a14" class="outline-2">
+<h2 id="org7be2a14"><span class="section-number-2"> 6</span> Interacting with Lean</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+You are now familiar with the fundamentals of dependent type theory,
+both as a language for defining mathematical objects and a language
+for constructing proofs. The one thing you are missing is a mechanism
+for defining new data types. We will fill this gap in the next chapter,
+which introduces the notion of an <i>inductive data type</i>. But first, in
+this chapter, we take a break from the mechanics of type theory to
+explore some pragmatic aspects of interacting with Lean.
+</p>
+</div>
+
+<div id="outline-container-orgf3a6597" class="outline-3">
+<h3 id="Displaying_Information"><a id="orgf3a6597"></a><span class="section-number-3"> 6.1</span> Displaying Information</h3>
+<div class="outline-text-3" id="text-Displaying_Information">
+<p>
+There are a number of ways in which you can query Lean for information
+about its current state and the objects and theorems that are
+available in the current context. You have already seen two of the
+most common ones, <code>check</code> and <code>eval</code>. Remember that <code>check</code> is often
+used in conjunction with the <code>@</code> operator, which makes all of the
+arguments to a theorem or definition explicit. In addition, you can
+use the <code>print</code> command to get information about any identifier. If
+the identifier denotes a definition or theorem, Lean prints the type
+of the symbol, and its definition. If it is a constant or an axiom,
+Lean indicates that fact, and shows the type.
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-1' mode="ace/mode/lean" readonly="true">-- examples with equality
+check eq
+check @eq
+check eq.symm
+check @eq.symm
+
+print eq.symm
+
+-- examples with and
+check and
+check and.intro
+check @and.intro
+
+-- examples with addition
+check add
+check @add
+eval add 3 2
+print add
+
+-- a user-defined function
+definition foo {α : Type} (x : α) : α := x
+
+check foo
+check @foo
+eval foo
+eval (foo @nat.zero)
+print foo
+</juicy-ace-editor><div id='lean-full-code-1' style='display:none'>-- examples with equality
+check eq
+check @eq
+check eq.symm
+check @eq.symm
+
+print eq.symm
+
+-- examples with and
+check and
+check and.intro
+check @and.intro
+
+-- examples with addition
+check add
+check @add
+eval add 3 2
+print add
+
+-- a user-defined function
+definition foo {α : Type} (x : α) : α := x
+
+check foo
+check @foo
+eval foo
+eval (foo @nat.zero)
+print foo
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-1').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+There are other useful <code>print</code> commands:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-text">print definition             : display definition
+print inductive              : display an inductive type and its constructors
+print notation               : display all notation
+print notation &lt;tokens&gt;      : display notation using any of the tokens
+print axioms                 : display assumed axioms
+print options                : display options set by user or emacs mode
+print prefix &lt;namespace&gt;     : display all declarations in the namespace
+print classes                : display all classes
+print instances &lt;class name&gt; : display all instances of the given class
+print fields &lt;structure&gt;     : display all "fields" of a structure
+</pre>
+</div>
+<p>
+We will discuss inductive types, structures, classes, instances in the
+next four chapters. Here are examples of how these commands are used:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-3' mode="ace/mode/lean" readonly="true">print notation
+print notation + * -
+print axioms
+print options
+print prefix nat
+print prefix nat.le
+print classes
+print instances ring
+print fields ring
+</juicy-ace-editor><div id='lean-full-code-3' style='display:none'>print notation
+print notation + * -
+print axioms
+print options
+print prefix nat
+print prefix nat.le
+print classes
+print instances ring
+print fields ring
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-3').text());">Try it yourself &raquo;</button></div>
+</div>
+
+
+<p>
+The behavior of the generic print command is determined by its
+argument, so that the following pairs of commands all do the same
+thing.
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-4' mode="ace/mode/lean" readonly="true">print add
+print definition add
+
+print +
+print notation +
+
+print nat
+print inductive nat
+
+print group
+print inductive group
+</juicy-ace-editor><div id='lean-full-code-4' style='display:none'>print add
+print definition add
+
+print +
+print notation +
+
+print nat
+print inductive nat
+
+print group
+print inductive group
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-4').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+Moreover, both <code>print group</code> and <code>print inductive group</code> recognize
+that a group is a structure (see <a href="#" onclick="myModule.loadTutorial('09_Structures_and_Records.html', 'Structures_and_Records')">Chapter 9</a>), and so print the fields as
+well.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7095ad1" class="outline-3">
+<h3 id="Setting_Options"><a id="org7095ad1"></a><span class="section-number-3"> 6.2</span> Setting Options</h3>
+<div class="outline-text-3" id="text-Setting_Options">
+<p>
+Lean maintains a number of internal variables that can be set by users
+to control its behavior. The syntax for doing so is as follows:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-text">set_option &lt;name&gt; &lt;value&gt;
+</pre>
+</div>
+
+<p>
+One very useful family of options controls the way Lean's <i>pretty-
+printer</i> displays terms. The following options take an input of true
+or false:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-text">pp.implicit  : display implicit arguments
+pp.universes : display hidden universe parameters
+pp.coercions : show coercions
+pp.notation  : display output using defined notations
+pp.beta      : beta reduce terms before displaying them
+</pre>
+</div>
+<p>
+In Lean, <i>coercions</i> can be inserted automatically to cast an element
+of one data type to another, for example, to cast an element of <code>nat</code>
+to an element of <code>int</code>. We will say more about them later in this
+chapter.
+</p>
+
+<p>
+As an example, the following settings yield much longer output:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-7' mode="ace/mode/lean" readonly="true">import data.nat
+open nat
+
+set_option pp.implicit true
+set_option pp.universes true
+set_option pp.notation false
+set_option pp.numerals false
+
+check 2 + 2 = 4
+eval (λ x, x + 2) = (λ x, x + 3)
+check (λ x, x + 1) 1
+
+set_option pp.beta false
+check (λ x, x + 1) 1
+</juicy-ace-editor><div id='lean-full-code-7' style='display:none'>import data.nat
+open nat
+
+set_option pp.implicit true
+set_option pp.universes true
+set_option pp.notation false
+set_option pp.numerals false
+
+check 2 + 2 = 4
+eval (λ x, x + 2) = (λ x, x + 3)
+check (λ x, x + 1) 1
+
+set_option pp.beta false
+check (λ x, x + 1) 1
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-7').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+Pretty printing additional information is often very useful when you
+are debugging a proof, or trying to understand a cryptic error
+message. Too much information can be overwhelming, though, and Lean's
+defaults are generally sufficient for ordinary interactions.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfb514bb" class="outline-3">
+<h3 id="orgfb514bb"><span class="section-number-3"> 6.3</span> Using the Library</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+To use Lean effectively you will inevitably need to make use of
+definitions and theorems in the library. Recall that the <code>import</code>
+command at the beginning of a file imports previously compiled results
+from other files, and that importing is transitive; if you import
+<code>foo</code> and <code>foo</code> imports <code>bar</code>, then the definitions and theorems from
+<code>bar</code> are available to you as well. But the act of opening a namespace,
+which provides shorter names,
+does not carry over. In each file, you need to open the namespaces
+you wish to use.
+</p>
+
+<p>
+In general, it is important for you to be familiar with the library
+and its contents, so you know what theorems, definitions, notations,
+and resources are available to you. Below we will see that Emacs'
+Lean mode can also help you find things you need, but studying the
+contents of the library directly is often unavoidable. Lean's standard
+library can be found online, on github:
+</p>
+<blockquote>
+<p>
+<a target='_blank' href="https://github.com/leanprover/lean/tree/master/library">https://github.com/leanprover/lean/tree/master/library</a>
+</p>
+</blockquote>
+<p>
+You can see the contents of the directories and files using github's
+browser interface. If you have installed Lean on your own computer,
+you can find the library in the <code>lean</code> folder, and explore it
+with your file manager. Comment headers at the top of each file
+provide additional information.
+</p>
+
+<p>
+Lean's library developers follow general naming guidelines to make it
+easier to guess the name of a theorem you need, or to find it using
+tab completion in Emacs' Lean mode, which is discussed in the next
+section. Identifiers are generally <code>snake_case</code>, which is to say, they
+are composed of words written in lower case separated by
+underscores. For the most part, we rely on descriptive names. Often
+the name of theorem simply describes the conclusion:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-8' mode="ace/mode/lean" readonly="true">open nat
+
+check succ_ne_zero
+check @mul_zero
+check @mul_one
+check @sub_add_eq_add_sub
+check @le_iff_lt_or_eq
+</juicy-ace-editor><div id='lean-full-code-8' style='display:none'>open nat
+
+check succ_ne_zero
+check @mul_zero
+check @mul_one
+check @sub_add_eq_add_sub
+check @le_iff_lt_or_eq
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-8').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+If only a prefix of the description is enough to convey the meaning,
+the name may be made even shorter:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-9' mode="ace/mode/lean" readonly="true">check @neg_neg
+check pred_succ</juicy-ace-editor><div id='lean-full-code-9' style='display:none'>open nat
+
+check @neg_neg
+check pred_succ
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-9').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+Sometimes, to disambiguate the name of theorem or better convey the
+intended reference, it is necessary to describe some of the
+hypotheses. The word "of" is used to separate these hypotheses:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-10' mode="ace/mode/lean" readonly="true">check @nat.lt_of_succ_le
+check @lt_of_not_ge
+check @lt_of_le_of_ne
+check @add_lt_add_of_lt_of_le
+</juicy-ace-editor><div id='lean-full-code-10' style='display:none'>check @nat.lt_of_succ_le
+check @lt_of_not_ge
+check @lt_of_le_of_ne
+check @add_lt_add_of_lt_of_le
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-10').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+Sometimes the word "left" or "right" is helpful to describe variants
+of a theorem.
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-11' mode="ace/mode/lean" readonly="true">check @add_le_add_left
+check @add_le_add_right
+</juicy-ace-editor><div id='lean-full-code-11' style='display:none'>check @add_le_add_left
+check @add_le_add_right
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-11').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+We can also use the word "self" to indicate a repeated argument:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-12' mode="ace/mode/lean" readonly="true">check mul_inv_self
+check neg_add_self
+</juicy-ace-editor><div id='lean-full-code-12' style='display:none'>check mul_inv_self
+check neg_add_self
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-12').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+Remember that identifiers in Lean can be organized into hierarchical
+namespaces. For example, the theorem named <code>lt_of_succ_le</code> in the
+namespace <code>nat</code> has full name <code>nat.lt_of_succ_le</code>, but the shorter
+name is made available by the command <code>open nat</code>. We will see in
+<a href="#" onclick="myModule.loadTutorial('07_Inductive_Types.html', 'Inductive_Types')">Chapter 7</a> and <a href="#" onclick="myModule.loadTutorial('09_Structures_and_Records.html', 'Structures_and_Records')">Chapter 9</a> that defining structures and inductive data
+types in Lean generates associated operations, and these are stored in
+a namespace with the same name as the type under definition. For
+example, the product type comes with the following opens:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-13' mode="ace/mode/lean" readonly="true">check @prod.mk
+check @prod.fst
+check @prod.snd
+check @prod.rec
+</juicy-ace-editor><div id='lean-full-code-13' style='display:none'>check @prod.mk
+check @prod.fst
+check @prod.snd
+check @prod.rec
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-13').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+The first is used to construct a pair, whereas the next two,
+<code>prod.fst</code> and <code>prod.snd</code>, project the two elements. The last,
+<code>prod.rec</code>, provides another mechanism for defining functions on a
+product in terms of a function on the two components. Names like
+<code>prod.rec</code> are <i>protected</i>, which means that one has to use the full
+name even when the <code>prod</code> namespace is open.
+</p>
+
+<p>
+With the propositions as types correspondence, it then makes sense
+that operations that construct, destruct, and otherwise make use of
+propositions are also grouped intro namespaces. We have already seen
+that this is the case with the logical connectives:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-14' mode="ace/mode/lean" readonly="true">check @and.intro
+check @and.elim
+check @and.left
+check @and.right
+check @or.inl
+check @or.inr
+check @or.elim
+check @exists.intro
+check @exists.elim
+check @eq.refl
+check @eq.subst
+</juicy-ace-editor><div id='lean-full-code-14' style='display:none'>check @and.intro
+check @and.elim
+check @and.left
+check @and.right
+check @or.inl
+check @or.inr
+check @or.elim
+check @exists.intro
+check @exists.elim
+check @eq.refl
+check @eq.subst
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-14').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+But it also applies to predicates and relations that can be introduced
+and eliminated in similar ways.
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-15' mode="ace/mode/lean" readonly="true">check @le.refl
+</juicy-ace-editor><div id='lean-full-code-15' style='display:none'>check @le.refl
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-15').text());">Try it yourself &raquo;</button></div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2b90114" class="outline-3">
+<h3 id="org2b90114"><span class="section-number-3"> 6.4</span> Using Lean with Emacs</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+This tutorial is designed to be read alongside Lean's web-browser
+interface, which runs a Javascript-compiled version of Lean inside
+your web browser. But there is a much more powerful interface to Lean
+that runs as a special mode in the Emacs text editor. This section
+describes some of the advantages and features of the Emacs interface.
+</p>
+
+<p>
+If you have never used Emacs before, you should spend
+some time experimenting with it. Emacs is an extremely powerful text
+editor, but it can also be overwhelming. There are a number of
+introductory tutorials on the web. See, for example:
+</p>
+<ul class="org-ul">
+<li><a target='_blank' href="http://www.gnu.org/software/emacs/tour/">A Guided Tour of Emacs</a></li>
+<li><a target='_blank' href="http://www.jesshamrick.com/2012/09/10/absolute-beginners-guide-to-emacs/">Absolute Beginner's Guide to Emacs</a></li>
+<li><a target='_blank' href="http://www.ucs.cam.ac.uk/docs/course-notes/unix-courses/earlier/Emacs/files/course.pdf">Introduction to Emacs Course (PDF)</a></li>
+</ul>
+
+<p>
+You can get pretty far simply using the menus at the top of the
+screen for basic editing and file management. Those menus list
+keyboard-equivalents for the commands. Notation like "C-x", short for
+"control x," means "hold down the control key while typing x." The
+notation "M-x", short for "Meta x," means "hold down the Alt key while
+typing x," or, equivalently, "press the Esc key, followed by x." For
+example, the "File" menu lists "C-c C-s" as a keyboard-equivalent for
+the "save file" command.
+</p>
+
+<p>
+There are a number of benefits to using the native version of Lean
+instead of the web interface. Perhaps the most important is file
+management. The web interface imports the entire standard library
+internally, which is why some examples in this tutorial have to put
+examples in a namespace, <code>hide</code>, to avoid conflicting with objects
+already defined in the standard library. Moreover, the web interface
+only operates on one file at a time. Using the Emacs editor, you can
+create and edit Lean theory files anywhere on your file system, as
+with any editor or word processor. From these files, you can import
+pieces of the library at will, as well as your own theories, defined
+in separate files.
+</p>
+
+<p>
+To use the Emacs with Lean, you simply need to create a file with the
+extension ".lean" and edit it. For example, you can create a file by
+typing <code>emacs my_file.lean</code> in a terminal window, in the directory
+where you want to keep the file. Assuming everything has been
+installed correctly, Emacs will start up in Lean mode, already
+checking your file in the background.
+</p>
+
+<p>
+You can then start typing, or copy any of the examples in this
+tutorial. (In the latter case, make sure you include the <code>import</code> and
+<code>open</code> commands that are sometimes hidden in the text.) Lean mode
+offers syntax highlighting, so commands, identifiers, and so on are
+helpfully color-coded. Any errors that Lean detects are subtly
+underlined in red, and the editor adds an annotation to the left
+margin at lines where errors occur. As you continue to type and
+eliminate errors, these annotations magically disappear.
+</p>
+
+<p>
+If you put the cursor on a highlighted error, Emacs displays the error
+message in at the bottom of the frame. Alternatively, if you type <code>C-c
+! l</code> while in Lean mode, Emacs opens a new window with a list of
+compilation errors. Lean relies on an Emacs package, <i>Flycheck</i>, for
+this functionality, as evidenced by the letters "FlyC" that appear in
+the Emacs information line.  Flycheck offers a number of commands that
+begin with <code>C-c !</code>. For example, <code>C-c ! n</code> moves the cursor to the
+next error, and <code>C-c ! p</code> moves the cursor to the previous error. You
+can get to a help menu that lists these key bindings by clicking on
+the "FlyC" tag.
+</p>
+
+<p>
+It may be disconcerting to see a perfectly good proof suddenly "break"
+when you change a single character. Moreover, changes can introduce
+errors downstream. But the error messages vanish quickly when
+correctness is restored. Lean is quite fast. It uses multiple cores to
+process a file, and caches previous work to speed up compilation. As a
+result, changes you make are registered almost instantaneously.
+</p>
+
+<p>
+It is often inconvenient to have to put the cursor on a highlighted
+identifier to see an error message or the outcome of a <code>print</code> or
+<code>check</code> command. The keystrokes <code>C-c C-n</code> toggle <code>Lean-Next-Error</code>
+mode, in which the next message (or all the messages that occur on the
+line that the cursor is on, if there are any) appears in a buffer
+named <code>*lean-info*</code>. You can position this window anywhere you want
+using Emacs commands to splitting windows and loading
+buffers. Pressing <code>C-c C-n</code> again toggles the mode off.
+</p>
+
+<p>
+The Emacs Lean mode also maintains a continuous dialog with the
+background Lean server and uses it to present useful information to
+you. For example, if you put your cursor on any identifier &#x2014; a
+theorem name, a defined symbol, or a variable &#x2014; Emacs displays its
+type in the information line at the bottom. 
+</p>
+
+<p>
+The Lean mode supports tab completion. In a context where Lean expects
+an identifier (e.g. a theorem name or a defined symbol), if you start
+typing and then hit the tab key, a popup window suggests possible
+matches or near-matches for the expression you have typed. This helps
+you find the theorems you need without having to browse the
+library. 
+</p>
+
+<p>
+If you put your cursor on an identifier and hit <code>M-.</code>, Emacs will take
+you to the identifier's definition, whether it is in the same file, in
+another file in the project (see <a href="#" onclick="myModule.scrollTutorialTo('Object_Files_and_Projects')">Section 6.5</a> below), or in the
+library. This works even in an autocompletion popup window: if you
+start typing an identifier, press the tab key, choose a completion
+from the list of options, and press "M-.", you are taken to the
+symbol's definition.  If you have Emacs 25 or later, you can then
+press "M-," to go back to the original location.
+</p>
+
+<p>
+In tactic mode, if you put your cursor on a tactic (or the keyword
+<code>begin</code> or <code>end</code>) and type <code>C-c C-g</code>, Emacs will show you the goal in
+the <code>*lean-info*</code> buffer. Here is another useful trick: if you see
+some notation in a Lean file and you want to know how to enter it from
+the keyboard, put the cursor on the symbol and type <code>C-c C-k</code>.
+</p>
+
+<p>
+Recall that typing an underscore in an expression asks Lean to infer a
+suitable value for the expression and fill it in automatically. In
+cases where Lean is unable to determine a value for the argument, the
+underscore is highlighted, and the error message indicates the type of
+the "hole" that needs to be filled. This can be extremely useful when
+constructing proofs incrementally. One can start typing a "proof
+sketch," using either <code>sorry</code> or an underscore for details you intend
+to fill in later. Assuming the proof is correct modulo these missing
+pieces of information, the error message at an unfilled underscore
+tells you the type of the term you need to construct, typically an
+assertion you need to justify.
+</p>
+
+<p>
+The Emacs Lean-mode commands are summarized in the online documentation:
+</p>
+<blockquote>
+<p>
+<a target='_blank' href="https://github.com/leanprover/lean/blob/master/src/emacs/README.md">https://github.com/leanprover/lean/blob/master/src/emacs/README.md</a>
+</p>
+</blockquote>
+
+<p>
+If for some reason the Lean background process does not seem to be
+responding (for example, the information line no longer shows you type
+information), type "C-c C-r" or "M-x lean-server-restart-process", or
+choose "restart lean process" from the Lean menu, and with luck that
+will set things right again.
+</p>
+
+<p>
+In Lean, the <code>exit</code> command halts processing of a file
+abruptly. Inserting an <code>exit</code> therefore prevents Lean from checking
+the file beyond that point.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgd686936" class="outline-3">
+<h3 id="Object_Files_and_Projects"><a id="orgd686936"></a><span class="section-number-3"> 6.5</span> Imports, Object Files, and Projects</h3>
+<div class="outline-text-3" id="text-Object_Files_and_Projects">
+<p>
+At this point, it will be helpful to convey more information about the
+inner workings of Lean. A <code>.lean</code> file (read "dot Lean") consists of
+instructions that tell Lean how to construct formal terms in dependent
+type theory. Processing this file is a matter of filling in missing
+or implicit information, constructing the relevant terms, and sending
+them to the type checker to confirm that they are well-formed and have
+the specified types. This is analogous to the compilation process for
+a programming language: the <code>.lean</code> file contains the source code that
+is then compiled down to machine representations of the desired formal
+objects. Lean caches the output of the compilation process in files
+with the extension <code>.olean</code>, for "object Lean".
+</p>
+
+<p>
+Assuming the directory that contains Lean is in your system path, you
+can run lean on a file <code>foo.lean</code> from a system command line by typing
+<code>lean foo.lean</code>. If <code>foo</code> imports other files, by default Lean looks for
+these in the standard library, which it finds relative to the
+directory from which it was invoked, and the current directory. You
+can change the default or add additional directories by specifying the
+search paths in the <code>LEAN_PATH</code> environment variable. You can specify
+subdirectories using periods in the module name: for example, <code>import
+foo.bar.baz</code> looks for the file "foo/bar/baz.lean" relative to any of
+the locations listed in the search path. A leading period, as in
+<code>import .foo.bar</code>, indicates that the .lean file in question is
+specified relative to the current directory. Two leading periods, as
+in <code>import ..foo.bar</code>, indicates that the address is relative to the
+parent directory, and so on.
+</p>
+
+<p>
+When processing <code>foo</code>, Lean uses any <code>.olean</code> files it can find for
+the imports as long as they are up to date with the source
+file. Otherwise, it recursively compiles the dependencies when
+necessary. Of course, it is more efficient if it can use the <code>.olean</code>
+files. The command <code>lean --make foo.lean</code> not only compiles <code>foo</code> but saves
+the results in <code>foo.olean</code>. You can compile more than one file at
+once, for example, with a command like <code>lean --make foo.lean bar.lean
+baz.lean</code>. 
+</p>
+
+<p>
+One often wants to create complex projects and arrange the source
+files in nested directories. If <code>bar</code> is a path to a directory, <code>lean
+--make bar</code> compiles all the files in that directory, descending
+recursively into subdirectories. The specified directory is added to
+the <code>LEAN_PATH</code>, so files in a project can specify <code>imports</code> in
+absolute terms from the base directory. The command <code>lean --make</code> is
+equivalent to <code>lean --make .</code>, which is to say, it compiles all the
+files within and below the current directory.
+</p>
+
+<p>
+Similar considerations hold when running Lean from Emacs. Lean mode
+starts a background Lean process that not only checks files and
+provides the messages you see in Flycheck, but also responds to other
+queries for information. Lean processes the current file in the
+background, giving highest priority to theorems that are visible in
+the buffer, and updating compilation tasks as you continue to
+type. Otherwise, the process is the same as command-line compilation:
+Lean uses <code>.olean</code> files when they are available and up to date, and
+compiles imports recursively when necessary.
+</p>
+
+<p>
+Because files can be opened in Emacs anywhere and at any time, it
+takes a bit more effort to help Lean mode identify the root directory
+when you open a file in a project. You can do this simply by creating
+a file named <code>.project</code> in that root directory. The contents of the
+file are ignored; the file serves only as a marker. (On variants of
+Unix, you can create an empty file by typing <code>touch .project</code> at a
+shell prompt.) When you open any <code>.lean</code> file in Emacs, Lean mode
+traverses the parent directories, and if it finds a <code>.project</code> file
+along the way, it takes that to be the root of the project.
+</p>
+
+<p>
+In fact, Lean mode starts one Lean server for each project being
+edited. As a result, if you are editing files <code>a.lean</code> and <code>b.lean</code>
+in the same project, and <code>b.lean</code> depends on <code>a.lean</code>, then whenever
+you make a change in <code>b.lean</code> the result is immediately visible to
+<code>a.lean</code>.
+</p>
+
+<p>
+Changes are not immediately available across projects, however.
+Suppose you have a project <code>foo</code> that depends on another project <code>bar</code>
+and you are editing both. If you want the changes in <code>bar</code> to be
+available to <code>foo</code>, simply save all the files in <code>bar</code>, switch to any
+file in <code>foo</code>, and either type <code>C-c C-r</code> or choose the corresponding
+Lean menu option to restart the Lean server. Upon restarting, the
+server for <code>foo</code> will detect and use the new version of <code>bar</code>.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org11573bf" class="outline-3">
+<h3 id="Notation_and_Abbreviations"><a id="org11573bf"></a><span class="section-number-3"> 6.6</span> Notation and Abbreviations</h3>
+<div class="outline-text-3" id="text-Notation_and_Abbreviations">
+<p>
+Lean's parser is an instance of a Pratt parser, a non-backtracking
+parser that is fast and flexible. You can read about Pratt parsers in
+a number of places online, such as here:
+</p>
+<blockquote>
+<p>
+<a target='_blank' href="http://en.wikipedia.org/wiki/Pratt_parser">http://en.wikipedia.org/wiki/Pratt_parser</a>
+<a target='_blank' href="http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing">http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing</a>
+</p>
+</blockquote>
+<p>
+Identifiers can include any alphanumeric characters, including Greek
+characters (other than Π , Σ , and λ , which, as we have seen, have a
+special meaning in the dependent type theory). They can also include
+subscripts, which can be entered by typing <code>\_</code> followed
+by the desired subscripted character.
+</p>
+
+<p>
+Lean's parser is moreover extensible, which is to say, we can define
+new notation.
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-16' mode="ace/mode/lean" readonly="true">notation `[` a `**` b `]` := a * b + 1
+
+definition mul_square (a b : ℕ) := a * a * b * b
+
+infix `&lt;*&gt;`:50 := mul_square
+
+eval [2 ** 3]
+eval 2 &lt;*&gt; 3
+</juicy-ace-editor><div id='lean-full-code-16' style='display:none'>notation `[` a `**` b `]` := a * b + 1
+
+definition mul_square (a b : ℕ) := a * a * b * b
+
+infix `&lt;*&gt;`:50 := mul_square
+
+eval [2 ** 3]
+eval 2 &lt;*&gt; 3
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-16').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+In this example, the <code>notation</code> command defines a complex binary
+notation for multiplying and adding one. The <code>infix</code> command declares
+a new infix operator, with precedence 50, which associates to the
+left. (More precisely, the token is given left-binding power 50.) The
+command <code>infixr</code> defines notation which associates to the right,
+instead.
+</p>
+
+<p>
+If you declare these notations in a namespace, the notation is only
+available when the namespace is open. You can declare temporary notation
+using the keyword <code>local</code>, in which case the notation is available
+in the current file, and moreover, within the scope of the current
+<code>namespace</code> or <code>section</code>, if you are in one.
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-17' mode="ace/mode/lean" readonly="true">local notation `[` a `**` b `]` := a * b + 1
+local infix `&lt;*&gt;`:50 := λ a b : ℕ, a * a * b * b</juicy-ace-editor><div id='lean-full-code-17' style='display:none'>local notation `[` a `**` b `]` := a * b + 1
+local infix `&lt;*&gt;`:50 := λ a b : ℕ, a * a * b * b
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-17').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+The file <code>reserved_notation.lean</code> in the <code>init</code> folder of the library
+declares the left-binding powers of a number of common symbols that
+are used in the library.
+</p>
+<blockquote>
+<p>
+<a target='_blank' href="https://github.com/leanprover/lean/blob/master/library/init/reserved_notation.lean">https://github.com/leanprover/lean/blob/master/library/init/reserved_notation.lean</a>
+</p>
+</blockquote>
+<p>
+You are welcome to overload these symbols for your own use, but you
+cannot change their right-binding power.
+</p>
+
+<p>
+Remember that you can direct the pretty-printer to suppress notation
+with the command <code>set_option pp.notation false</code>. You can also declare
+notation to be used for input purposes only with the <code>[parsing_only]</code>
+attribute:
+</p>
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-18' mode="ace/mode/lean" readonly="true">notation [parsing_only] `[` a `**` b `]` := a * b + 1
+
+variables a b : ℕ
+check [a ** b]
+</juicy-ace-editor><div id='lean-full-code-18' style='display:none'>notation [parsing_only] `[` a `**` b `]` := a * b + 1
+
+variables a b : ℕ
+check [a ** b]
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-18').text());">Try it yourself &raquo;</button></div>
+</div>
+<p>
+The output of the <code>check</code> command displays the expression as <code>a * b +
+1</code>. Lean also provides mechanisms for iterated notation, such as <code>[a,
+b, c, d, e]</code> to denote a list with the indicated elements. See the
+discussion of <code>list</code> in the next chapter for an example.
+</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
